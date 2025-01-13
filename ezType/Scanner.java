@@ -72,6 +72,8 @@ public class Scanner {
             case '/':
                 if (match('/')) {
                     while(peek() != '\n' && !isAtEnd()) advance();
+                } else if (match('*')) {
+                    blockComment();
                 } else {
                     addToken(SLASH);
                 }
@@ -92,6 +94,20 @@ public class Scanner {
                     EzType.error(line, "Unexpected character.");
                 }
                 break;
+        }
+    }
+
+    private void blockComment() {
+        while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
+            if (peek() == '\n') line++;
+            advance();
+        }
+        // eat the closing */
+        for (int i = 0; i < 2; i++) {
+            if (isAtEnd()) {
+                EzType.error(line, "Unterminated block comment.");
+            }
+            advance();
         }
     }
 
