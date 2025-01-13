@@ -1,3 +1,5 @@
+package ezType;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -5,9 +7,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 
 public class EzType {
+
+    static boolean hadError = false;
 
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
@@ -24,6 +27,9 @@ public class EzType {
     private static void runFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
+
+        // indicate an error in the exit code
+        if (hadError) System.exit(65);
     }
 
     // REPL
@@ -36,6 +42,8 @@ public class EzType {
             String line = reader.readLine();
             if (line == null) break;
             run(line);
+            // reset error so REPL keeps running even after error occured
+            hadError = false;
         }
     }
 
@@ -48,5 +56,15 @@ public class EzType {
         for (Token token : tokens) {
             System.out.println(token);
         }
+    }
+
+    // TODO: add character number
+    static void error(int line, String message) {
+        report(line, "", message);
+    }
+
+    private static void report(int line, String where, String message) {
+        System.err.println("[line " + line + "] Error" + where + ": " + message);
+        hadError = true;
     }
 }
