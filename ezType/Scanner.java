@@ -150,6 +150,7 @@ public class Scanner {
 
         if (isAtEnd()) {
             EzType.error(line, "Unterminated String.");
+            return;
         }
 
         // The closing ".
